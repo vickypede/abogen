@@ -35,7 +35,14 @@ pending_id = resp.headers.get("Location", "").split("pending_id=")[-1]
 print(f"Pending ID: {pending_id}")
 
 # Enable all chapters (use a number higher than your page count)
-form_data = {"pending_id": pending_id, "voice": "af_heart", "speed": "1.0"}
+# We also force the output to save directly to /content/ so it's visible
+form_data = {
+    "pending_id": pending_id, 
+    "voice": "af_heart", 
+    "speed": "1.0",
+    "save_mode": "custom",
+    "output_folder": "/content"
+}
 for i in range(700):
     form_data[f"chapter-{i}-enabled"] = "on"
 
@@ -63,9 +70,38 @@ while True:
     time.sleep(10)
 ```
 
-## Step 5: Download output
-When done, find output files in the 📁 Files sidebar.
-Look in the output folder or check the server log for the output path.
+## Step 5: Download output (new cell)
+Run this when the job finishes to automatically locate and download the generated file:
+```python
+import os
+from google.colab import files
+
+found_files = []
+# Abogen usually saves it to /content/ or a hidden cache folder
+for search_dir in ['/content', '/root/.cache/abogen']:
+    for root, dirs, filenames in os.walk(search_dir):
+        for filename in filenames:
+            if filename.endswith(('.wav', '.m4b', '.m4a', '.mp3', '.epub')):
+                # Ignore the original pdf input
+                if "Cloud FinOps" in filename and filename.endswith('.pdf'): continue
+                found_files.append(os.path.join(root, filename))
+
+if found_files:
+    # Get the most recently created audio file
+    latest_file = max(found_files, key=os.path.getctime)
+    
+    # If it's hidden, move it to /content/ so you can see it in the sidebar
+    if not latest_file.startswith('/content/'):
+        new_path = os.path.join('/content', os.path.basename(latest_file))
+        os.rename(latest_file, new_path)
+        latest_file = new_path
+        
+    print(f"✅ Found output at: {latest_file}")
+    print("⏳ Starting download now...")
+    files.download(latest_file)
+else:
+    print("❌ Couldn't find the output file. Check the server.log for errors.")
+```
 
 ## Notes
 - Select **T4 GPU** runtime: Runtime → Change runtime type → T4 GPU
