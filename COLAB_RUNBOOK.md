@@ -71,3 +71,20 @@ Look in the output folder or check the server log for the output path.
 - Select **T4 GPU** runtime: Runtime → Change runtime type → T4 GPU
 - ~900K characters ≈ 30 min on T4 GPU vs 6+ hours on CPU
 - Download files BEFORE closing the tab — Colab deletes everything on disconnect
+
+## For Next Time: Better Output (Single Audiobook File)
+By default, this script runs with standard settings. If you want a single, compact audiobook file (M4B format) with all chapters merged together:
+
+In **Step 3**, modify the `form_data` dictionary to include these parameters:
+```python
+form_data = {
+    "pending_id": pending_id, 
+    "voice": "af_heart", 
+    "speed": "1.0",
+    "output_format": "m4b",
+    "merge_chapters_at_end": "true",
+    "save_chapters_separately": "false"
+}
+```
+This will compile all the generated audio segments into one single `.m4b` file (which is natively supported by Apple Books and mobile player apps with working chapter markers).
+
