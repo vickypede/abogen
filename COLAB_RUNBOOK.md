@@ -72,10 +72,11 @@ Look in the output folder or check the server log for the output path.
 - ~900K characters ≈ 30 min on T4 GPU vs 6+ hours on CPU
 - Download files BEFORE closing the tab — Colab deletes everything on disconnect
 
-## For Next Time: Better Output (Single Audiobook File)
-By default, this script runs with standard settings. If you want a single, compact audiobook file (M4B format) with all chapters merged together:
+## For Next Time: Better Output Formats
+By default, this script runs with standard settings (outputting WAV files). You can modify the `form_data` dictionary in **Step 3** to get much better formats:
 
-In **Step 3**, modify the `form_data` dictionary to include these parameters:
+### Option A: Single Audiobook File (M4B)
+If you want a single, compact audiobook file that is natively supported by Apple Books and mobile player apps with working chapter markers:
 ```python
 form_data = {
     "pending_id": pending_id, 
@@ -86,5 +87,16 @@ form_data = {
     "save_chapters_separately": "false"
 }
 ```
-This will compile all the generated audio segments into one single `.m4b` file (which is natively supported by Apple Books and mobile player apps with working chapter markers).
+
+### Option B: Kindle-Style "Read-Along" Book (EPUB3)
+If you want a format that contains **both the text and the audio synchronized together** (like Amazon Whispersync), Abogen can generate an EPUB3 file with "Media Overlays". This works perfectly in Apple Books and highlights the text as the audio plays:
+```python
+form_data = {
+    "pending_id": pending_id, 
+    "voice": "af_heart", 
+    "speed": "1.0",
+    "generate_epub3": "true"
+}
+```
+
 
